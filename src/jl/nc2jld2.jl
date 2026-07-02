@@ -1,34 +1,34 @@
+module NC2JLD2
+
 using NCDatasets
 using JLD2
 
-# NetCDFを開く
-ncfile = joinpath(@__DIR__, "../../data/0106.nc")
-ds = Dataset(ncfile)
+export nc2jld2
 
-# 必要な変数だけ取得
-lon   = ds["lon"][:]
-lat   = ds["lat"][:]
-p = ds["p"][:]
-time  = ds["time"][:]
-
-u = Float32.(ds["u"][:])
-v = Float32.(ds["v"][:])
-w = Float32.(ds["w"][:])
-
-close(ds)
-
-# 保存先
-outfile = joinpath(@__DIR__, "../../data/0106.jld2")
-
-# JLD2へ保存
-jldsave(outfile;
-    lon,
-    lat,
-    p,
-    time,
-    u,
-    v,
-    w,
+function nc2jld2(
+    infile::AbstractString,
+    outfile::AbstractString,
 )
+    Dataset(infile) do ds
+        lon   = ds["lon"][:]
+        lat   = ds["lat"][:]
+        p     = ds["p"][:]
+        time  = ds["time"][:]
 
-println("Saved to $outfile")
+        u = (ds["u"][:])
+        v = (ds["v"][:])
+        w = (ds["w"][:])
+
+        jldsave(outfile;
+            lon,
+            lat,
+            p,
+            time,
+            u,
+            v,
+            w,
+        )
+    end
+end
+
+end # module
